@@ -8,16 +8,25 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+// Fix CORS: Allow requests from Vercel frontend
+const corsOptions = {
+  origin: "https://shaganashree-portfolio.vercel.app", // ⬅️ Replace with your Vercel frontend URL
+  methods: "GET,POST",
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Connect to MongoDB
+// MongoDB Connection with Error Handling
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.error('Failed to connect to MongoDB:', err));
+.catch((err) => {
+  console.error('Failed to connect to MongoDB:', err);
+  process.exit(1); // Exit if failed to connect to MongoDB
+});
 
 // Define a schema for messages
 const messageSchema = new mongoose.Schema({
@@ -28,13 +37,18 @@ const messageSchema = new mongoose.Schema({
 
 const Message = mongoose.model('Message', messageSchema);
 
-// Create a Nodemailer transporter
+// Nodemailer Configuration with Error Handling
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER, // Your Gmail address
     pass: process.env.EMAIL_PASS, // Your App Password
   },
+});
+
+// Root Route (Check if Backend is Running)
+app.get("/", (req, res) => {
+  res.send("Portfolio Backend is Running!");
 });
 
 // Route to handle form submissions
@@ -65,14 +79,17 @@ app.post('/contact', async (req, res) => {
     };
 
     // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent:', info.response);
+    
+/*    transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error('Error sending email:', error);
       } else {
         console.log('Email sent:', info.response);
       }
     });
-
+*/
     res.status(200).json({ success: true, message: 'Message sent successfully!' });
   } catch (err) {
     console.error('Error:', err);
@@ -82,5 +99,5 @@ app.post('/contact', async (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
