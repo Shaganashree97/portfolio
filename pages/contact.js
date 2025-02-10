@@ -13,7 +13,7 @@ export default function Contact() {
     };
 
     try {
-      const res = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL}/contact', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
