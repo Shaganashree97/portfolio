@@ -13,7 +13,7 @@ export default function Contact() {
     };
 
     try {
-      const res = await fetch('https://shaganashree.onrender.com/contact', {
+      const res = await fetch('https://shaganashree.onrender.com/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
