@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 // Fix CORS: Allow requests from Vercel frontend
 const corsOptions = {
-  origin: "https://shaganashree-portfolio.vercel.app", // ⬅️ Replace with your Vercel frontend URL
+  origin: "https://shaganashree-portfolio.vercel.app/contact", // ⬅️ Replace with your Vercel frontend URL
   methods: "GET,POST",
   credentials: true,
 };
